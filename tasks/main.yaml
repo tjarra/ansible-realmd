@@ -1,0 +1,53 @@
+- name: Change PasswordAuthentication to yes 
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication no'
+    line: 'PasswordAuthentication yes'
+    backup: yes
+
+- name: Restart service sshd
+  service:
+    name: sshd
+    state: restarted 
+
+- name: copy Internal repo
+  copy:
+    src: CentOS-Internal.repo
+    dest: /etc/yum.repos.d/CentOS-Internal.repo
+
+- name: Ensure Realmd is installed.
+  yum:
+    name: "{{ item }}" 
+    state: present
+    #disablerepo: base,updates,extras
+  with_items:
+    - "realmd"
+    - "oddjob"
+    - "oddjob-mkhomedir"
+    - "sssd"
+    - "adcli"
+    - "samba-common-tools"
+
+- name: Install the pexpect rpm from a remote repo
+  yum:
+    name: http://10.22.0.3/centos/7/base/Packages/python2-pexpect-4.5-1.el7.noarch.rpm
+    state: present
+
+- name: Check realm status
+  command: realm list
+  register: result
+
+#- name: Case insensitive password string match
+#  expect:
+#    command: realm join -U tiagosa klabin.net
+#    responses:
+#      Senha para tiagosa: {{ password }} 
+#  when: result.stdout == ""
+
+#- name: Allow AD group to have passwordless sudo
+#  lineinfile:
+#    dest: /etc/sudoers
+#    state: present
+#    regexp: '^{{ grp_ad }}'
+#    line: '{{ grp_ad }} ALL=NOPASSWD: ALL, !/usr/sbin/visudo, !/usr/bin/passwd, !/usr/sbin/realm, !/user/bin/su'
+#    validate: 'visudo -cf %s'
