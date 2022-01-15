@@ -30,7 +30,7 @@
 
 - name: Install the pexpect rpm from a remote repo
   yum:
-    name: http://10.22.0.3/centos/7/base/Packages/python2-pexpect-4.5-1.el7.noarch.rpm
+    name: python2-pexpect-4.5-1.el7.noarch.rpm
     state: present
 
 - name: Check realm status
@@ -39,9 +39,9 @@
 
 #- name: Case insensitive password string match
 #  expect:
-#    command: realm join -U tiagosa klabin.net
+#    command: realm join -U usuario dominio.net
 #    responses:
-#      Senha para tiagosa: {{ password }} 
+#      Senha para usuario: {{ password }} 
 #  when: result.stdout == ""
 
 #- name: Allow AD group to have passwordless sudo
